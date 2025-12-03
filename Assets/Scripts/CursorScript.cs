@@ -6,9 +6,9 @@ public class CursorScript : MonoBehaviour
 
     void Start()
     {
-        DefaultCursor();    
+        DefaultCursor();
     }
-    
+
     public void DefaultCursor()
     {
         Cursor.SetCursor(cursors[0], Vector2.zero, CursorMode.Auto);
