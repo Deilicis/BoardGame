@@ -3,10 +3,10 @@
 
 **TO-DO list:**
 - [X] Multiple cursors
-- [ ] Main menu animations
-- [ ] Main menu button (start, quit, settings, leaderboard)
-- [ ] Character selection screen with animmations
-- [ ] Settings scene
+- [X] Main menu animations
+- [X] Main menu button (start, quit, settings, leaderboard)
+- [X] Character selection screen with animmations
+- [X] Settings scene
 - [ ] Board scene with throwable dice
 - [ ] Game logic with multiple players
 - [ ] Game camera
