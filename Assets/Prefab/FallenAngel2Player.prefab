@@ -188,6 +188,7 @@ GameObject:
   - component: {fileID: 6936752749904835241}
   - component: {fileID: 946980834557974645}
   - component: {fileID: 9094727544512203793}
+  - component: {fileID: -5391648413089707443}
   m_Layer: 0
   m_Name: FallenAngel2Player
   m_TagString: Untagged
@@ -205,7 +206,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 1, y: 0.555, z: 0}
-  m_LocalScale: {x: 0.1, y: 0.1, z: 0.1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 2589300709442336750}
@@ -300,3 +301,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddc8265c60e29184e99e6d9947aaa581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+--- !u!114 &-5391648413089707443
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8236704296298906453}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3effc4cbd750fb147946f12d9de2b852, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  currentNode: 0
+  moveSpeed: 3

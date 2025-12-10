@@ -1,8 +1,9 @@
 using UnityEngine;
-
 public class SideDetectScript : MonoBehaviour
 {
     DiceRollScript diceRollScript;
+    [SerializeField] private float landedVelocitySqrThreshold = 0.01f;
+
     void Awake()
     {
         diceRollScript = GetComponentInParent<DiceRollScript>();
@@ -10,17 +11,19 @@ public class SideDetectScript : MonoBehaviour
 
     private void OnTriggerStay(Collider sideCollider)
     {
-        if(diceRollScript != null)
+        if (diceRollScript == null) return;
+
+        var rb = diceRollScript.GetComponent<Rigidbody>();
+        if (rb == null) return;
+
+        if (rb.linearVelocity.sqrMagnitude <= landedVelocitySqrThreshold)
         {
-            if (diceRollScript.GetComponent<Rigidbody>().linearVelocity == Vector3.zero) 
-            {
-                diceRollScript.isLanded = true;
-                diceRollScript.diceFaceNum = sideCollider.name;
-            }
-            else
-            {
-                diceRollScript.isLanded = false;
-            }
+            diceRollScript.isLanded = true;
+            diceRollScript.diceFaceNum = gameObject.name;
+        }
+        else
+        {
+            diceRollScript.isLanded = false;
         }
     }
 }

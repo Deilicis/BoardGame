@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.IO;
+
 public class PlayerScript : MonoBehaviour
 {
     public GameObject[] playerPrefabs;
@@ -17,25 +18,34 @@ public class PlayerScript : MonoBehaviour
             spawnPoint.transform.position,
             Quaternion.identity
         );
+
+        // --- Register the main player immediately ---
+        GameTurnManager.instance.RegisterPlayer(mainCharacter.GetComponent<PlayerMovementScript>());
+
         mainCharacter.GetComponent<NameScript>().SetName(PlayerPrefs.GetString("PlayerName", "Kroplis"));
 
+        // Spawn AI players
         otherPlayers = new int[PlayerPrefs.GetInt("PlayerCount")];
         string[] nameArray = ReadLinesFromFile(textFileName);
 
         for (int i = 0; i < otherPlayers.Length; i++)
         {
-            spawnPoint.transform.position += new Vector3(0.8f, 0, 0.08f);
+            spawnPoint.transform.position += new Vector3(2f, 0, 0.08f);
             index = Random.Range(0, playerPrefabs.Length);
             GameObject otherPlayer = Instantiate(
                 playerPrefabs[index],
                 spawnPoint.transform.position,
                 Quaternion.identity
             );
+
+            GameTurnManager.instance.RegisterPlayer(otherPlayer.GetComponent<PlayerMovementScript>());
+
             otherPlayer.GetComponent<NameScript>().SetName(
                 nameArray[Random.Range(0, nameArray.Length)]
             );
         }
     }
+
 
     string[] ReadLinesFromFile(string filename)
     {
@@ -50,4 +60,10 @@ public class PlayerScript : MonoBehaviour
             return new string[0];
         }
     }
+    private System.Collections.IEnumerator RegisterMainPlayerDelayed(GameObject mainCharacter)
+    {
+        yield return null; // Wait one frame
+        GameTurnManager.instance.RegisterPlayer(mainCharacter.GetComponent<PlayerMovementScript>());
+    }
+
 }

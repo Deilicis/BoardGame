@@ -3,25 +3,28 @@ using UnityEngine;
 public class DiceRollScript : MonoBehaviour
 {
     Rigidbody rBody;
-    Vector3 position, startPosition;
-    [SerializeField] private float maxRandForceVal, startRollingForce;
+    Vector3 startPosition;
+    [SerializeField] private float maxRandForceVal = 10f;
+    [SerializeField] private float startRollingForce = 1000f;
     float forceX, forceY, forceZ;
+
     public string diceFaceNum;
     public bool isLanded = false;
     public bool firstThrow = false;
+    public bool hasProcessedResult = false;
+
+    [Header("Click Settings")]
+    [SerializeField] private Collider clickCollider; // assign your new SphereCollider here
+    [SerializeField] private LayerMask clickLayer;   // layer that includes only the click collider
 
     void Awake()
     {
         startPosition = transform.position;
-        Initialize();
-    }
-
-    private void Initialize()
-    {
         rBody = GetComponent<Rigidbody>();
         rBody.isKinematic = true;
-        position = transform.position;
-        transform.rotation = new Quaternion(Random.Range(0,360), Random.Range(0,  360), Random.Range(0, 360), 0);
+
+        if (clickCollider == null)
+            Debug.LogWarning("Click Collider not assigned!");
     }
 
     private void RollDice()
@@ -30,38 +33,54 @@ public class DiceRollScript : MonoBehaviour
         forceX = Random.Range(0, maxRandForceVal);
         forceY = Random.Range(0, maxRandForceVal);
         forceZ = Random.Range(0, maxRandForceVal);
+
         rBody.AddForce(Vector3.up * Random.Range(800, startRollingForce));
         rBody.AddTorque(forceX, forceY, forceZ);
     }
 
-    public void resetDice()
+    public void ResetDice()
     {
         transform.position = startPosition;
         firstThrow = false;
         isLanded = false;
-        Initialize();
+        hasProcessedResult = false;
+        rBody.linearVelocity = Vector3.zero;
+        rBody.angularVelocity = Vector3.zero;
+        rBody.isKinematic = true;
     }
 
     void Update()
     {
-       if(rBody != null)
+        // ---- CLICK DETECTION ----
+        if (Input.GetMouseButtonDown(0) && clickCollider != null)
         {
-            if (Input.GetMouseButtonDown(0) && isLanded || Input.GetMouseButtonDown(0) || !firstThrow)
-            {
-                Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-                RaycastHit hit;
+            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
+            RaycastHit hit;
 
-                if(Physics.Raycast(ray, out hit))
+            if (Physics.Raycast(ray, out hit, Mathf.Infinity, clickLayer))
+            {
+                if (hit.collider == clickCollider)
                 {
-                    if(hit.collider != null && hit.collider.gameObject == this.gameObject)
-                    {
-                        if(!firstThrow)
-                        {
-                            firstThrow = true;
-                        }
-                        RollDice();
-                    }
+                    if (!firstThrow)
+                        firstThrow = true;
+
+                    RollDice();
+                    hasProcessedResult = false;
                 }
+            }
+        }
+
+        // ---- MOVE PLAYER AFTER DICE LANDS ----
+        if (isLanded && !hasProcessedResult)
+        {
+            hasProcessedResult = true;
+
+            if (GameTurnManager.instance != null && GameTurnManager.instance.GetCurrentPlayer() != null)
+            {
+                GameTurnManager.instance
+                    .GetCurrentPlayer()
+                    .GetComponent<PlayerMovementScript>()
+                    .MoveSteps(int.Parse(diceFaceNum));
             }
         }
     }

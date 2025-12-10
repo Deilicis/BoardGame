@@ -3,34 +3,37 @@ using UnityEngine.UI;
 
 public class RolledNumberScript : MonoBehaviour
 {
-    [Header("References")]
-    [Tooltip("Assign the DiceRollScript if it's on a different GameObject. Otherwise the script will try to find one automatically.")]
-    [SerializeField] private DiceRollScript diceRollScript;
-
-    [SerializeField]
-    public Text rolledNumberText;
+    [SerializeField] private DiceRollScript diceRollScript; // assign in Inspector when possible
+    [SerializeField] private Text rolledNumberText;
 
     void Awake()
     {
-        // Allow manual assignment in Inspector; otherwise try several fallbacks (only once)
+        // If not assigned in inspector, try common lookups
         if (diceRollScript == null)
         {
-            diceRollScript = GetComponent<DiceRollScript>()
-                             ?? GetComponentInParent<DiceRollScript>()
-                             ?? GetComponentInChildren<DiceRollScript>()
-                             ?? FindObjectOfType<DiceRollScript>();
+            diceRollScript = GetComponent<DiceRollScript>();
+        }
+        if (diceRollScript == null)
+        {
+            diceRollScript = GetComponentInParent<DiceRollScript>();
+        }
+        if (diceRollScript == null)
+        {
+            diceRollScript = GetComponentInChildren<DiceRollScript>();
+        }
+        if (diceRollScript == null)
+        {
+            diceRollScript = FindObjectOfType<DiceRollScript>();
         }
 
         if (diceRollScript == null)
         {
-            Debug.LogWarning($"RolledNumberScript on '{gameObject.name}' cannot find a DiceRollScript. " +
-                "Either add DiceRollScript to the same GameObject, assign it in the Inspector, " +
-                "or ensure a parent/child contains the component.");
+            Debug.LogWarning("DiceRollScript not found. Assign it in the inspector or place this script on the same GameObject as the dice.");
         }
 
         if (rolledNumberText == null)
         {
-            Debug.LogWarning($"RolledNumberScript on '{gameObject.name}' has no Text assigned to 'rolledNumberText'.");
+            Debug.LogWarning("rolledNumberText not assigned in inspector.");
         }
     }
 
@@ -44,6 +47,6 @@ public class RolledNumberScript : MonoBehaviour
             return;
         }
 
-        rolledNumberText.text = diceRollScript.isLanded ? diceRollScript.diceFaceNum : "?";
+        rolledNumberText.text = diceRollScript.isLanded ? (diceRollScript.diceFaceNum ?? "?") : "?";
     }
 }
