@@ -19,6 +19,9 @@ public class PlayerMovementScript : MonoBehaviour
 
     public void MoveSteps(int steps)
     {
+        var cameraController = FindObjectOfType<CameraController>();
+        if (cameraController != null)
+            cameraController.SwitchToPlayer(transform);
         if (!isMoving)
             StartCoroutine(Move(steps));
     }
@@ -55,7 +58,7 @@ public class PlayerMovementScript : MonoBehaviour
 
         GameTurnManager.instance.NextPlayerTurn();
         DiceRollScript dice = FindObjectOfType<DiceRollScript>();
-        dice.resetDice();
+        dice.ResetDice();
     }
 
     public bool IsMoving() => isMoving;

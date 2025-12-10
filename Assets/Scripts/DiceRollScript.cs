@@ -47,6 +47,9 @@ public class DiceRollScript : MonoBehaviour
         rBody.linearVelocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
         rBody.isKinematic = true;
+        var cameraController = FindObjectOfType<CameraController>();
+        if (cameraController != null)
+            cameraController.SwitchToDice();
     }
 
     void Update()

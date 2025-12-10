@@ -314,4 +314,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentNode: 0
-  moveSpeed: 3
+  moveSpeed: 20
