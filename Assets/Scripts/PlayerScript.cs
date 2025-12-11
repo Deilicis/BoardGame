@@ -13,33 +13,38 @@ public class PlayerScript : MonoBehaviour
     void Start()
     {
         characterIndex = PlayerPrefs.GetInt("SelectedCharacter", 0);
+        int playerCount = PlayerPrefs.GetInt("PlayerCount");
+
+        // Main player
         GameObject mainCharacter = Instantiate(
             playerPrefabs[characterIndex],
             spawnPoint.transform.position,
             Quaternion.identity
         );
-
-        // --- Register the main player immediately ---
-        GameTurnManager.instance.RegisterPlayer(mainCharacter.GetComponent<PlayerMovementScript>());
-
+        var mainMove = mainCharacter.GetComponent<PlayerMovementScript>();
+        mainMove.currentNode = 0; // All players start at node 0
+        mainMove.startOffset = Vector3.zero; // No offset for main player
+        GameTurnManager.instance.RegisterPlayer(mainMove);
         mainCharacter.GetComponent<NameScript>().SetName(PlayerPrefs.GetString("PlayerName", "Kroplis"));
 
-        // Spawn AI players
-        otherPlayers = new int[PlayerPrefs.GetInt("PlayerCount")];
+        // AI players
+        otherPlayers = new int[playerCount];
         string[] nameArray = ReadLinesFromFile(textFileName);
 
         for (int i = 0; i < otherPlayers.Length; i++)
         {
-            spawnPoint.transform.position += new Vector3(2f, 0, 0.08f);
             index = Random.Range(0, playerPrefabs.Length);
             GameObject otherPlayer = Instantiate(
                 playerPrefabs[index],
                 spawnPoint.transform.position,
                 Quaternion.identity
             );
-
-            GameTurnManager.instance.RegisterPlayer(otherPlayer.GetComponent<PlayerMovementScript>());
-
+            var moveScript = otherPlayer.GetComponent<PlayerMovementScript>();
+            moveScript.currentNode = 0; // All players start at node 0
+            // Offset each AI player to avoid overlap
+            float offsetAmount =5f; // Adjust as needed
+            moveScript.startOffset = new Vector3((i + 1) * offsetAmount, 0, (i + 1) * 3f);
+            GameTurnManager.instance.RegisterPlayer(moveScript);
             otherPlayer.GetComponent<NameScript>().SetName(
                 nameArray[Random.Range(0, nameArray.Length)]
             );
@@ -60,10 +65,4 @@ public class PlayerScript : MonoBehaviour
             return new string[0];
         }
     }
-    private System.Collections.IEnumerator RegisterMainPlayerDelayed(GameObject mainCharacter)
-    {
-        yield return null; // Wait one frame
-        GameTurnManager.instance.RegisterPlayer(mainCharacter.GetComponent<PlayerMovementScript>());
-    }
-
 }

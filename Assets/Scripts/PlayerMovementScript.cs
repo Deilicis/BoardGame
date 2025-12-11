@@ -5,7 +5,7 @@ public class PlayerMovementScript : MonoBehaviour
 {
     public int currentNode = 0;
     public float moveSpeed = 8f;
-
+    public Vector3 startOffset = Vector3.zero;
     BoardPathScript board;
     bool isMoving = false;
     Animator animator; // Add reference
@@ -13,8 +13,8 @@ public class PlayerMovementScript : MonoBehaviour
     void Start()
     {
         board = FindObjectOfType<BoardPathScript>();
-        transform.position = board.nodes[currentNode].position;
-        animator = GetComponent<Animator>(); // Get Animator
+        transform.position = board.nodes[currentNode].position + startOffset;
+        animator = GetComponent<Animator>();
     }
 
     public void MoveSteps(int steps)
@@ -30,7 +30,7 @@ public class PlayerMovementScript : MonoBehaviour
     {
         isMoving = true;
         if (animator != null)
-            animator.SetBool("walk", true); // Start walk animation
+            animator.SetBool("walk", true);
 
         for (int i = 0; i < steps; i++)
         {
@@ -54,7 +54,13 @@ public class PlayerMovementScript : MonoBehaviour
 
         isMoving = false;
         if (animator != null)
-            animator.SetBool("walk", false); // Stop walk animation
+            animator.SetBool("walk", false);
+
+        if (currentNode == board.nodes.Count - 1)
+        {
+            GameManager.instance.ShowVictoryScreen(this);
+            yield break;
+        }
 
         GameTurnManager.instance.NextPlayerTurn();
         DiceRollScript dice = FindObjectOfType<DiceRollScript>();

@@ -1,9 +1,10 @@
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine.InputSystem;
 #endif
+using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-
+using UnityEngine.UI;
 public class GameManager : MonoBehaviour
 {
     [Header("Pause UI")]
@@ -15,7 +16,16 @@ public class GameManager : MonoBehaviour
 
     bool isPaused = false;
 
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
+    public static GameManager instance;
+    public GameObject victoryScreen; // Assign in inspector
+    public TextMeshProUGUI winnerNameText;
+    public SpriteRenderer winnerSpriteRenderer; // If using a world-space sprite
+    // public Image winnerImage; // If using a UI Image
+
+    void Awake()
+    {
+        instance = this;
+    }
     void Start()
     {
         // Ensure game starts unpaused and overlay hidden
@@ -38,8 +48,23 @@ public class GameManager : MonoBehaviour
         }
 #endif
     }
+    public void ShowVictoryScreen(PlayerMovementScript winner)
+    {
+        victoryScreen.SetActive(true);
 
-    public void TogglePause()
+        // Set winner name
+        winnerNameText.text = winner.GetComponent<NameScript>().playerName;
+
+        // Set winner sprite
+        SpriteRenderer playerSprite = winner.GetComponentInChildren<SpriteRenderer>();
+        if (playerSprite != null && winnerSpriteRenderer != null)
+            winnerSpriteRenderer.sprite = playerSprite.sprite;
+
+        // If using UI Image:
+        // if (playerSprite != null && winnerImage != null)
+        //     winnerImage.sprite = playerSprite.sprite;
+    }
+public void TogglePause()
     {
         if (isPaused) ResumeGame(); else PauseGame();
     }

@@ -7,7 +7,7 @@ public class DiceRollScript : MonoBehaviour
     [SerializeField] private float maxRandForceVal = 10f;
     [SerializeField] private float startRollingForce = 1000f;
     float forceX, forceY, forceZ;
-
+    private int dicePressCount = 0;
     public string diceFaceNum;
     public bool isLanded = false;
     public bool firstThrow = false;
@@ -47,6 +47,7 @@ public class DiceRollScript : MonoBehaviour
         rBody.linearVelocity = Vector3.zero;
         rBody.angularVelocity = Vector3.zero;
         rBody.isKinematic = true;
+        dicePressCount = 0; // Reset press count
         var cameraController = FindObjectOfType<CameraController>();
         if (cameraController != null)
             cameraController.SwitchToDice();
@@ -55,7 +56,7 @@ public class DiceRollScript : MonoBehaviour
     void Update()
     {
         // ---- CLICK DETECTION ----
-        if (Input.GetMouseButtonDown(0) && clickCollider != null)
+        if (Input.GetMouseButtonDown(0) && clickCollider != null && dicePressCount < 3)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -69,6 +70,7 @@ public class DiceRollScript : MonoBehaviour
 
                     RollDice();
                     hasProcessedResult = false;
+                    dicePressCount++; // Increment press count
                 }
             }
         }
