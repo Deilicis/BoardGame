@@ -82,10 +82,12 @@ public class DiceRollScript : MonoBehaviour
 
             if (GameTurnManager.instance != null && GameTurnManager.instance.GetCurrentPlayer() != null)
             {
-                GameTurnManager.instance
-                    .GetCurrentPlayer()
-                    .GetComponent<PlayerMovementScript>()
-                    .MoveSteps(int.Parse(diceFaceNum));
+                var player = GameTurnManager.instance.GetCurrentPlayer().GetComponent<PlayerMovementScript>();
+
+                int value = int.Parse(diceFaceNum);
+                player.AddDiceValue(value);
+                player.MoveSteps(value);
+
             }
         }
     }

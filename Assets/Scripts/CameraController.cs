@@ -26,10 +26,12 @@ public class CameraController : MonoBehaviour
     {
         currentPlayer = player;
         state = CameraState.Player;
+        Debug.Log("Switching camera to Player view.");
     }
 
     public void SwitchToDice()
     {
+        Debug.Log("Switching camera to Dice view.");
         state = CameraState.Dice;
     }
 }

@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ddc8265c60e29184e99e6d9947aaa581, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerName: 
 --- !u!114 &-3069523512619759372
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -139,7 +140,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   currentNode: 0
-  moveSpeed: 20
+  moveSpeed: 50
+  startOffset: {x: 0, y: 0, z: 0}
+  hasFinished: 0
 --- !u!114 &5077257698748077539
 MonoBehaviour:
   m_ObjectHideFlags: 0

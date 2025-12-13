@@ -4,6 +4,20 @@ using UnityEngine;
 
 public class SaveLoadScript : MonoBehaviour
 {
+    [System.Serializable]
+    public class LeaderboardEntry
+    {
+        public string playerName;
+        public float timePlayed;
+        public int diceSum;
+        public bool hasFinished;
+    }
+
+    [System.Serializable]
+    public class LeaderboardData
+    {
+        public LeaderboardEntry[] entries;
+    }
     public string saveFileName = "savefile.json";
 
     [Serializable]

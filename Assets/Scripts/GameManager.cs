@@ -1,6 +1,7 @@
 #if ENABLE_INPUT_SYSTEM && !ENABLE_LEGACY_INPUT_MANAGER
 using UnityEngine.InputSystem;
 #endif
+using System.Linq;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -19,8 +20,9 @@ public class GameManager : MonoBehaviour
     public static GameManager instance;
     public GameObject victoryScreen; // Assign in inspector
     public TextMeshProUGUI winnerNameText;
-    public SpriteRenderer winnerSpriteRenderer; // If using a world-space sprite
-    // public Image winnerImage; // If using a UI Image
+    // public SpriteRenderer winnerSpriteRenderer; // Remove or comment out
+    public Image winnerImage; // Assign this in the inspector
+
 
     void Awake()
     {
@@ -55,16 +57,32 @@ public class GameManager : MonoBehaviour
         // Set winner name
         winnerNameText.text = winner.GetComponent<NameScript>().playerName;
 
-        // Set winner sprite
+        // Set winner sprite for UI Image
         SpriteRenderer playerSprite = winner.GetComponentInChildren<SpriteRenderer>();
-        if (playerSprite != null && winnerSpriteRenderer != null)
-            winnerSpriteRenderer.sprite = playerSprite.sprite;
+        if (playerSprite != null && winnerImage != null)
+            winnerImage.sprite = playerSprite.sprite;
+        Debug.Log("Winner sprite: " + (playerSprite != null ? playerSprite.sprite.name : "null"));
 
-        // If using UI Image:
-        // if (playerSprite != null && winnerImage != null)
-        //     winnerImage.sprite = playerSprite.sprite;
+        // Save leaderboard data when the game ends
+        SaveLeaderboard();
     }
-public void TogglePause()
+    public void SaveLeaderboard()
+    {
+        var players = GameTurnManager.instance.GetAllPlayers();
+        var data = new SaveLoadScript.LeaderboardData();
+        data.entries = players.Select(p => new SaveLoadScript.LeaderboardEntry
+        {
+            playerName = p.GetComponent<NameScript>().playerName,
+            timePlayed = p.timePlayed,
+            diceSum = p.totalDiceSum,
+            hasFinished = p.hasFinished
+        }).ToArray();
+
+        string json = JsonUtility.ToJson(data);
+        System.IO.File.WriteAllText(Application.persistentDataPath + "/leaderboard.json", json);
+    }
+
+    public void TogglePause()
     {
         if (isPaused) ResumeGame(); else PauseGame();
     }
@@ -76,7 +94,13 @@ public void TogglePause()
         Time.timeScale = 0f;
         isPaused = true;
     }
+    public void ResetGame()
+    {
 
+        Time.timeScale = 1f;
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+
+    }
     public void ResumeGame()
     {
         if (pauseMenu != null) pauseMenu.SetActive(false);

@@ -9,16 +9,29 @@ public class PlayerMovementScript : MonoBehaviour
     BoardPathScript board;
     bool isMoving = false;
     Animator animator; // Add reference
+    public bool hasFinished = false;
+    public float timeStarted; // When this player started
+    public float timeFinished; // When this player finished
+    public float timePlayed = 0f;
+    public int totalDiceSum = 0;
 
     void Start()
     {
         board = FindObjectOfType<BoardPathScript>();
         transform.position = board.nodes[currentNode].position + startOffset;
         animator = GetComponent<Animator>();
+        GameTurnManager.instance.RegisterPlayer(this);
+        timeStarted = Time.time;
     }
-
+    void Update()
+    {
+        if (!hasFinished)
+            timePlayed += Time.deltaTime;
+    }
     public void MoveSteps(int steps)
     {
+        if (hasFinished) return; // Prevent finished players from moving
+
         var cameraController = FindObjectOfType<CameraController>();
         if (cameraController != null)
             cameraController.SwitchToPlayer(transform);
@@ -58,13 +71,19 @@ public class PlayerMovementScript : MonoBehaviour
 
         if (currentNode == board.nodes.Count - 1)
         {
-            GameManager.instance.ShowVictoryScreen(this);
+            hasFinished = true;
+            timeFinished = Time.time;
+            GameTurnManager.instance.OnPlayerFinished(this);
             yield break;
         }
 
         GameTurnManager.instance.NextPlayerTurn();
         DiceRollScript dice = FindObjectOfType<DiceRollScript>();
         dice.ResetDice();
+    }
+    public void AddDiceValue(int value)
+    {
+        totalDiceSum += value;
     }
 
     public bool IsMoving() => isMoving;
