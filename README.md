@@ -7,7 +7,11 @@
 - [X] Main menu button (start, quit, settings, leaderboard)
 - [X] Character selection screen with animmations
 - [X] Settings scene
-- [ ] Board scene with throwable dice
-- [ ] Game logic with multiple players
-- [ ] Game camera
-- [ ] Leaderboard scene
+- [X] Board scene with throwable dice
+- [X] Map with moveable characters
+- [X] Dice plate
+- [X] Victory logic
+- [X] Game logic with multiple players
+- [X] Game camera
+- [X] Leaderboard scene
+- [X] Leaderboard saving and showing in main menu
