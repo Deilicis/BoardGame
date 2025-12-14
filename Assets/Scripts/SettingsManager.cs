@@ -67,14 +67,19 @@ public class SettingsManager : MonoBehaviour
         }
         SetSfxVolume(savedSfxVolume);
 
-        // Apply resolution
-        if (resolutionDropdown != null)
+        void Start()
         {
-            resolutionDropdown.onValueChanged.RemoveAllListeners();
-            resolutionDropdown.onValueChanged.AddListener(OnResolutionSelected);
-            resolutionDropdown.value = Mathf.Clamp(savedResIndex, 0, resolutions.Count - 1);
+            // ... existing code ...
+
+            // Apply resolution
+            if (resolutionDropdown != null)
+            {
+                resolutionDropdown.onValueChanged.RemoveAllListeners();
+                resolutionDropdown.onValueChanged.AddListener(OnResolutionSelected);
+                resolutionDropdown.value = Mathf.Clamp(savedResIndex, 0, resolutions.Count - 1);
+            }
+            ApplyResolutionIndex(savedResIndex);
         }
-        ApplyResolutionIndex(savedResIndex);
     }
 
     void PopulateResolutionDropdown()
@@ -205,8 +210,37 @@ public class SettingsManager : MonoBehaviour
     // Optional: call from a Fullscreen toggle to persist fullscreen choice
     public void SetFullscreen(bool fullscreen)
     {
-        Screen.fullScreen = fullscreen;
+        if (fullscreen)
+        {
+            int width = Display.main != null ? Display.main.systemWidth : Screen.currentResolution.width;
+            int height = Display.main != null ? Display.main.systemHeight : Screen.currentResolution.height;
+
+            Screen.SetResolution(width, height, FullScreenMode.FullScreenWindow);
+            Screen.fullScreen = true;
+
+            // Fallback: try exclusive fullscreen after a frame if still not fullscreen
+            StartCoroutine(EnsureExclusiveFullscreen(width, height));
+        }
+        else
+        {
+            int index = PlayerPrefs.GetInt("ResolutionIndex", 0);
+            if (index < 0 || index >= resolutions.Count) index = 0;
+            var r = resolutions[index];
+            Screen.SetResolution(r.x, r.y, FullScreenMode.Windowed);
+            Screen.fullScreen = false;
+        }
+
         PlayerPrefs.SetInt("Fullscreen", fullscreen ? 1 : 0);
         PlayerPrefs.Save();
+    }
+
+    private System.Collections.IEnumerator EnsureExclusiveFullscreen(int width, int height)
+    {
+        yield return null; // wait one frame
+        if (!Screen.fullScreen)
+        {
+            Screen.SetResolution(width, height, FullScreenMode.ExclusiveFullScreen);
+            Screen.fullScreen = true;
+        }
     }
 }

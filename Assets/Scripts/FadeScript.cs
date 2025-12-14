@@ -6,9 +6,15 @@ public class FadeScript : MonoBehaviour
     Image img;
     Color tempColor;
 
-    void Start()
+    void Awake()
     {
         img = GetComponent<Image>();
+        if (img == null)
+            Debug.LogError("FadeScript: No Image component found on this GameObject!", this);
+    }
+
+    void Start()
+    {
         tempColor = img.color;
         tempColor.a = 1f;
         img.color = tempColor;
@@ -17,7 +23,7 @@ public class FadeScript : MonoBehaviour
 
     public IEnumerator FadeIn(float fadeSpeed)
     {
-        for(float a=1f; a>=-0.05f; a-=0.05f)
+        for (float a = 1f; a >= -0.05f; a -= 0.05f)
         {
             tempColor = img.color;
             tempColor.a = a;
@@ -25,10 +31,15 @@ public class FadeScript : MonoBehaviour
             yield return new WaitForSecondsRealtime(fadeSpeed);
         }
         img.raycastTarget = false;
-    }   
+    }
     public IEnumerator FadeOut(float fadeSpeed)
     {
-        for (float a = 0f; a >= 1.05f; a += 0.05f)
+        if (img == null)
+        {
+            Debug.LogError("FadeScript: Image component is missing in FadeOut!", this);
+            yield break;
+        }
+        for (float a = 0f; a <= 1.05f; a += 0.05f)
         {
             tempColor = img.color;
             tempColor.a = a;

@@ -19,6 +19,7 @@ public class GameManager : MonoBehaviour
 
     public static GameManager instance;
     public GameObject victoryScreen; // Assign in inspector
+    public GameObject victory;
     public TextMeshProUGUI winnerNameText;
     // public SpriteRenderer winnerSpriteRenderer; // Remove or comment out
     public Image winnerImage; // Assign this in the inspector
@@ -53,7 +54,7 @@ public class GameManager : MonoBehaviour
     public void ShowVictoryScreen(PlayerMovementScript winner)
     {
         victoryScreen.SetActive(true);
-
+        victory.SetActive(true);
         // Set winner name
         winnerNameText.text = winner.GetComponent<NameScript>().playerName;
 

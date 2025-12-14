@@ -17,27 +17,23 @@ public class SceneChanger : MonoBehaviour
     {
         if (string.Equals(command, "quit", System.StringComparison.OrdinalIgnoreCase))
         {
-            yield return fadeScript.FadeOut(0.4f);
-            PlayerPrefs.DeleteAll();
+            if (fadeScript != null)
+                yield return fadeScript.FadeOut(0.1f);
+            else
+                Debug.LogWarning("FadeScript is not assigned in SceneChanger!");
 
-            //if (UnityEditor.EditorApplication.isPlaying)
-            //{
-            //    UnityEditor.EditorApplication.isPlaying = false;
-            //}
-            //else
-            //{
-                Application.Quit();
-            //}
+            PlayerPrefs.DeleteAll();
+            Application.Quit();
         }
         else if (string.Equals(command, "play", System.StringComparison.OrdinalIgnoreCase))
         {
-            yield return fadeScript.FadeOut(0.4f);
+            yield return fadeScript.FadeOut(0.01f);
             saveLoadScript.SaveGame(characterIndex, characterName);
             SceneManager.LoadScene(1, LoadSceneMode.Single);
         }
         else if (string.Equals(command, "menu", System.StringComparison.OrdinalIgnoreCase))
         {
-            yield return fadeScript.FadeOut(0.4f);
+            yield return fadeScript.FadeOut(0.1f);
             SceneManager.LoadScene(0, LoadSceneMode.Single);
         }
     }

@@ -40,6 +40,16 @@ public class DiceRollScript : MonoBehaviour
 
     public void ResetDice()
     {
+        // Prevent reset if the current player is moving
+        var currentPlayerObj = GameTurnManager.instance != null ? GameTurnManager.instance.GetCurrentPlayer() : null;
+        var playerMovement = currentPlayerObj != null ? currentPlayerObj.GetComponent<PlayerMovementScript>() : null;
+        if (playerMovement != null && playerMovement.IsMoving())
+            return;
+
+        // Only reset if the dice is not moving
+        if (rBody.linearVelocity.sqrMagnitude > 0.0001f || rBody.angularVelocity.sqrMagnitude > 0.0001f)
+            return;
+
         transform.position = startPosition;
         firstThrow = false;
         isLanded = false;
@@ -56,7 +66,11 @@ public class DiceRollScript : MonoBehaviour
     void Update()
     {
         // ---- CLICK DETECTION ----
-        if (Input.GetMouseButtonDown(0) && clickCollider != null && dicePressCount < 3)
+        var currentPlayerObj = GameTurnManager.instance != null ? GameTurnManager.instance.GetCurrentPlayer() : null;
+        var playerMovement = currentPlayerObj != null ? currentPlayerObj.GetComponent<PlayerMovementScript>() : null;
+        bool playerIsMoving = playerMovement != null && playerMovement.IsMoving();
+
+        if (Input.GetMouseButtonDown(0) && clickCollider != null && dicePressCount < 3 && !playerIsMoving)
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
