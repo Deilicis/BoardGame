@@ -33,7 +33,6 @@ public class SceneChanger : MonoBehaviour
         }
         else if (string.Equals(command, "menu", System.StringComparison.OrdinalIgnoreCase))
         {
-            yield return fadeScript.FadeOut(0.1f);
             SceneManager.LoadScene(0, LoadSceneMode.Single);
         }
     }
